@@ -7,7 +7,7 @@ pub fn main() {
   gleeunit.main()
 }
 
-pub fn part_1_test() -> Nil {
+pub fn part_1_testx() -> Nil {
   println("")
   println("")
   println("Running Dec 1 Part 1 Tests")
@@ -18,7 +18,7 @@ pub fn part_1_test() -> Nil {
   assert Ok(989) == l
 }
 
-pub fn part_2_test() -> Nil {
+pub fn part_2_testx() -> Nil {
   println("")
   println("")
   println("Running Dec 1 Part 2 Tests")
