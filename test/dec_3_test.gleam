@@ -30,6 +30,6 @@ pub fn part_2_test() -> Nil {
   println("")
   println("Input")
   let l = dec_3.part2("./test/dec3/input.txt")
-  assert Ok(38731915928) == l
+  assert Ok(170449335646486) == l
 }
 

@@ -1,7 +1,8 @@
 import simplifile
 import gleam/string.{split,trim}
 import gleam/int
-import gleam/io.{println}
+//import gleam/io.{println}
+import gleam/list.{length}
 
 fn to_ints(strings: List(String)) -> Result(List(Int), String) {
   case strings {
@@ -86,9 +87,44 @@ pub fn part1(filepath: String) -> Result(Int, String) {
   }
 }
 
+fn solve_p2_line_d(data: List(Int), numbers: Int) -> #(Int, List(Int)) {
+  case length(data) >= numbers, data {
+    True, [head, ..tail] -> {
+      let #(other, other_tail) = solve_p2_line_d(tail, numbers)
+      case head >= other {
+        True -> #(head, tail)
+        False -> #(other, other_tail)
+      }
+    }
+    _, _ -> #(0, [])
+  }
+}
+
+fn solve_p2_line(data: List(Int), numbers: Int, aggregate: Int) -> Int {
+  case numbers {
+    0 -> aggregate
+    _ -> {
+      let #(x, rest) = solve_p2_line_d(data, numbers)
+      solve_p2_line(rest, numbers - 1, aggregate * 10 + x)
+    }
+  }
+}
+
+fn solve_p2(data: List(List(Int))) -> Int {
+  case data {
+    [] -> 0
+    [first, ..rest] -> case solve_p2_line(first, 12, 0), solve_p2(rest) {
+      line_result, aggregate -> {
+        //println("Line Result: " <> int.to_string(line_result) <> " Aggregate: " <> int.to_string(aggregate))
+        line_result + aggregate
+      }
+    }
+  }
+}
+
 pub fn part2(filepath: String) -> Result(Int, String) {
   case parse(filepath) {
-    Ok(data) -> solve_p1(data)
+    Ok(data) -> Ok(solve_p2(data))
     Error(x) -> Error(x)
   }
 }
