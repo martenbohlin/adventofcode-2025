@@ -1,7 +1,7 @@
 import simplifile
 import gleam/string.{split,trim}
 import gleam/int
-import gleam/io.{println}
+//import gleam/io.{println}
 
 fn parse(filepath: String) {
   let c = simplifile.read(from: filepath)

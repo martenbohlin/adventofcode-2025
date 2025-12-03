@@ -1,7 +1,7 @@
 import simplifile
 import gleam/string.{split,trim}
 import gleam/int
-import gleam/io.{println}
+//import gleam/io.{println}
 
 fn to_ranges(list: List(String)) -> Result(List(#(Int, Int)), String) {
   case list {
