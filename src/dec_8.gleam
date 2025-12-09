@@ -1,9 +1,7 @@
 import simplifile
 import gleam/string.{split,trim}
 import gleam/list
-import gleam/set.{type Set}
 import gleam/dict.{type Dict}
-import gleam/option.{type Option, Some, None}
 import gleam/int
 import gleam/float
 
@@ -39,7 +37,7 @@ fn distance(a: #(Float,Float,Float), b: #(Float,Float,Float)) -> Float {
 fn group(pairs: List(#(Float, #(Float,Float,Float), #(Float,Float,Float))), aggregate: Dict(#(Float,Float,Float), List(#(Float,Float,Float)))) -> Dict(#(Float,Float,Float), List(#(Float,Float,Float))) {
   case pairs {
     [] -> aggregate
-    [ #(d,a,b), ..rest ] -> {
+    [ #(_,a,b), ..rest ] -> {
       let #(lista, listb) = case dict.get(aggregate, a), dict.get(aggregate, b) {
         Ok(lista), Ok(listb) -> #(lista, listb)
         Error(_), Ok(listb) -> #([], listb)
@@ -77,7 +75,7 @@ fn solve_p1(data: List(#(Float,Float,Float)), connections: Int) -> Result(Int, S
   })
   |> list.take(connections)
   |> group(dict.new())
-  |> dict.fold([], fn(agregate, key: #(Float,Float,Float), value: List(#(Float,Float,Float)) ) {
+  |> dict.fold([], fn(agregate, _key, value) {
     [value, ..agregate]
   })
   |> list.unique()
@@ -101,10 +99,63 @@ pub fn part1(filepath: String, connections: Int) -> Result(Int, String) {
   }
 }
 
+fn group_p2(pairs: List(#(Float, #(Float,Float,Float), #(Float,Float,Float))), nr_jboxes: Int, aggregate: Dict(#(Float,Float,Float), List(#(Float,Float,Float)))) -> Int {
+  case pairs {
+    [] -> -1
+    [ #(_,a,b), ..rest ] -> {
+      let #(lista, listb) = case dict.get(aggregate, a), dict.get(aggregate, b) {
+        Ok(lista), Ok(listb) -> #(lista, listb)
+        Error(_), Ok(listb) -> #([], listb)
+        Ok(lista), Error(_) -> #(lista, [])
+        Error(_), Error(_) -> #([], [])
+      }
+      let new_group = [a,b, ..lista |> list.append(listb)] |> list.unique()
+      case list.length(new_group) == nr_jboxes {
+        True -> {
+          echo nr_jboxes
+          echo new_group
+          echo a
+          echo b
+          float.truncate(a.0) * float.truncate(b.0)
+        }
+        False -> group_p2(rest, nr_jboxes, dict.fold(aggregate, aggregate, fn(aggregate, key, _) {
+          case new_group |> list.contains(key) {
+            True -> dict.insert(aggregate, key, new_group)
+            False -> aggregate
+          }
+        }
+        )
+        |> dict.insert(a, new_group)
+        |> dict.insert(b, new_group)
+        )
+      }
+    }
+  }
+}
+
+
+fn solve_p2(data: List(#(Float,Float,Float))) -> Result(Int, String) {
+  echo list.combinations(data,2)
+  |> list.fold([], fn(agregate, pair) {
+    case pair {
+      [a,b] -> {
+        let d = distance(a,b)
+        [ #(d, a,b), ..agregate]
+      }
+      _ -> agregate
+    }
+  })
+  |> list.sort(fn (a, b) {
+    float.compare(a.0, b.0)
+  })
+  |> group_p2(list.length(data), dict.new())
+  |> Ok
+}
+
 pub fn part2(filepath: String) -> Result(Int, String) {
   case parse(filepath) {
     Ok(data) -> {
-      Ok(0)
+      solve_p2(data)
     }
     Error(x) -> Error(x)
   }

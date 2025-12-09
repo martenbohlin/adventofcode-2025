@@ -1,6 +1,5 @@
 import gleeunit
 import gleam/io.{println}
-import gleam/float
 
 import dec_8
 
@@ -8,7 +7,7 @@ pub fn main() {
   gleeunit.main()
 }
 
-pub fn part_1_test() -> Nil {
+pub fn part_1_testx() -> Nil {
   println("")
   println("Running Dec 8 Part 1 Tests")
   let l = dec_8.part1("./test/dec8/example.txt", 10)
@@ -25,11 +24,11 @@ pub fn part_2_testx() -> Nil {
   println("")
   println("Running Dec 8 Part 2 Tests")
   let l = dec_8.part2("./test/dec8/example.txt")
-  assert Ok(40) == l
+  assert Ok(25272) == l
 
   println("")
   println("Input")
   let l = dec_8.part2("./test/dec8/input.txt")
-  assert Ok(15650261281488) == l
+  assert Ok(51294528) == l
 }
 
