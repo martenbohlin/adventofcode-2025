@@ -7,6 +7,7 @@ packages = [
   { name = "gleam_stdlib", version = "0.67.1", build_tools = ["gleam"], requirements = [], otp_app = "gleam_stdlib", source = "hex", outer_checksum = "6CE3E4189A8B8EC2F73AB61A2FBDE49F159D6C9C61C49E3B3082E439F260D3D0" },
   { name = "glearray", version = "2.1.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "glearray", source = "hex", outer_checksum = "5E272F7CB278CC05A929C58DEB58F5D5AC6DB5B879A681E71138658D0061C38A" },
   { name = "gleeunit", version = "1.9.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleeunit", source = "hex", outer_checksum = "DA9553CE58B67924B3C631F96FE3370C49EB6D6DC6B384EC4862CC4AAA718F3C" },
+  { name = "qcheck_gleeunit_utils", version = "1.0.0", build_tools = ["gleam"], requirements = ["gleam_stdlib", "gleeunit"], otp_app = "qcheck_gleeunit_utils", source = "hex", outer_checksum = "B16411414C96CE60319C463F9DCE552489F65E179FB2A9AC7D22321C952074D3" },
   { name = "simplifile", version = "2.3.1", build_tools = ["gleam"], requirements = ["filepath", "gleam_stdlib"], otp_app = "simplifile", source = "hex", outer_checksum = "957E0E5B75927659F1D2A1B7B75D7B9BA96FAA8D0C53EA71C4AD9CD0C6B848F6" },
 ]
 
@@ -15,4 +16,5 @@ gleam_deque = { version = ">= 1.0.0 and < 2.0.0" }
 gleam_stdlib = { version = ">= 0.44.0 and < 2.0.0" }
 glearray = { version = ">= 2.1.0 and < 3.0.0" }
 gleeunit = { version = ">= 1.0.0 and < 2.0.0" }
+qcheck_gleeunit_utils = { version = ">= 1.0.0 and < 2.0.0" }
 simplifile = { version = ">= 2.3.1 and < 3.0.0" }
