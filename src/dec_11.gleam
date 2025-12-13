@@ -1,9 +1,8 @@
 import simplifile
 import gleam/string.{split,trim}
 import gleam/list
-import gleam/int
 import gleam/dict.{type Dict}
-import gleam/set.{type Set}
+import rememo/memo
 
 fn parse_line(line: String) -> #(String, List(String)) {
   case split(line, ": ") {
@@ -43,13 +42,31 @@ pub fn part1(filepath: String) -> Result(Int, String) {
   }
 }
 
-fn solve_p2(data: Dict(String, List(String))) -> Result(Int, String) {
-  Ok(0)
+fn solve_p2(device: String, passed_dac: Bool, passed_fft: Bool, data: Dict(String, List(String)), cache) -> Int {
+  use <- memo.memoize(cache, #(device, passed_dac, passed_fft))
+  case device {
+    "out" -> case passed_dac, passed_fft {
+      True, True -> 1
+      _, _ -> 0
+    }
+    x -> case dict.get(data, x) {
+      Ok(values) -> {
+        list.fold(values, 0, fn(aggregate, value) {
+          aggregate + solve_p2(value, passed_dac || device == "dac", passed_fft || device == "fft", data, cache)
+        })
+      }
+      Error(_) -> 0
+    }
+  }
 }
 
 pub fn part2(filepath: String) -> Result(Int, String) {
   case parse(filepath) {
-    Ok(data) -> solve_p2(data)
+    //Ok(data) -> Ok(solve_p1("svr", data))
+    Ok(data) -> {
+      use cache <- memo.create()
+      Ok(solve_p2("svr", False, False, data, cache))
+    }
     Error(x) -> Error(x)
   }
 }
