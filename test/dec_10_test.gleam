@@ -21,7 +21,7 @@ pub fn part_1_testx() -> Nil {
   assert Ok(522) == l
 }
 
-pub fn part_2_ex_test_()  {
+pub fn part_2_ex_testx_()  {
   println("")
   println("")
   println("Running Dec 10 Part 2 Tests")
@@ -31,7 +31,7 @@ pub fn part_2_ex_test_()  {
   })
 }
 
-pub fn part_2_inp_test_()  {
+pub fn part_2_inp_testx_()  {
   println("")
   println("Input")
   test_spec.make(fn() {
