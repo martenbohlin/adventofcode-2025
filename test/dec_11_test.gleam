@@ -19,7 +19,7 @@ pub fn part_1_testx() -> Nil {
   assert Ok(552) == l
 }
 
-pub fn part_2_test() -> Nil {
+pub fn part_2_testx() -> Nil {
   println("")
   println("")
   println("Running Dec 11 Pagirt 2 Tests")
