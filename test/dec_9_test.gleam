@@ -29,7 +29,43 @@ pub fn part_2_testx() -> Nil {
   println("")
   println("Input")
   let l = dec_9.part2("./test/dec9/input.txt")
-  assert Ok(258114870) == l
+  assert Ok(1568849600) == l
   // Too low 258114870
 }
 
+pub fn intersects_testx() -> Nil {
+  // Parallel overlapping
+  let x = dec_9.intersects(
+    #(#(0,0), #(0,10)),
+    #(#(0,5), #(0, 15))
+  )
+  assert False == x
+
+  // True intersects
+  let x = dec_9.intersects(
+  #(#(2,0), #(2,10)),
+  #(#(0,5), #(3, 5))
+  )
+  assert True == x
+
+  // crossing but not overlapping
+  let x = dec_9.intersects(
+  #(#(2,0), #(2,10)),
+  #(#(3,5), #(5, 5))
+  )
+  assert False == x
+
+  // crossing but starting on line going out
+  let x = dec_9.intersects(
+  #(#(2,0), #(2,10)),
+  #(#(2,5), #(5, 5))
+  )
+  assert False == x
+
+  // crossing but starting on line going in
+  let x = dec_9.intersects(
+  #(#(2,0), #(2,10)),
+  #(#(1,5), #(2, 5))
+  )
+  assert True == x
+}
