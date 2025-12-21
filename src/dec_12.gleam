@@ -3,7 +3,7 @@ import gleam/string.{split,trim}
 import gleam/int
 import gleam/list
 import glearray.{type Array, copy_push}
-import gleam/io.{println,println_error,print_error}
+import gleam/io.{println_error,print_error}
 import gleam/option.{type Option, Some, None}
 import gleam/bool
 import gleam/set

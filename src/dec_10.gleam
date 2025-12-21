@@ -5,10 +5,9 @@ import gleam/dict.{type Dict}
 import gleam/int
 import gleam/io.{println_error}
 import gleam/order.{type Order, Eq, Lt, Gt}
-import gleam/set.{type Set}
 import gleam/string.{split,trim}
 import glearray.{type Array}
-import gleam/option.{type Option, Some, None}
+import gleam/option.{Some, None}
 
 fn pares_lights(light_diagram: String, result: Array(Bool)) -> Array(Bool) {
   case light_diagram {
@@ -112,64 +111,6 @@ pub fn part1(filepath: String) -> Result(Int, String) {
   }
 }
 
-fn increase_joltage(current_joltage: Array(Int), button: List(Int)) -> Array(Int) {
-  case button {
-    [] -> current_joltage
-    [index, ..rest] -> {
-      case glearray.get(current_joltage, index) {
-        Ok(value) -> {
-          let new = case glearray.copy_set(current_joltage, index, value + 1) {
-            Ok(updated) -> updated
-            Error(_) -> panic as {"Button index out of bounds: " <> int.to_string(index)}
-          }
-          increase_joltage(new, rest)
-        }
-        Error(_) -> panic as {"Button index out of bounds: " <> int.to_string(index)}
-      }
-    }
-  }
-}
-
-fn compare_joltage(current_joltage: Array(Int), wanted_joltage: Array(Int)) -> order.Order {
-      let comparison = list.zip(glearray.to_list(current_joltage), glearray.to_list(wanted_joltage))
-      |> list.fold(order.Eq, fn (agregate, x) {
-        let #(current, wanted) = x
-        case agregate {
-          order.Eq -> int.compare(current, wanted)
-          order.Lt -> case int.compare(current, wanted) {
-            order.Gt -> order.Gt
-            _ -> order.Lt
-          }
-          order.Gt -> order.Gt
-        }
-      })
-      comparison
-}
-
-fn breadth_first_search_p2(wanted_joltage:Array(Int), all_buttons: List(List(Int)), queue: Deque(#(Array(Int), Int, List(Int))), explored: Set(Array(Int))) -> Int {
-  case pop_front(queue) {
-    Ok(#(#(current_joltage, presses, button), queue)) -> {
-      let new_joltage = increase_joltage(current_joltage, button)
-      case compare_joltage(new_joltage, wanted_joltage) {
-        order.Eq -> presses
-        order.Lt -> {
-          case set.contains(explored, new_joltage) {
-            True -> breadth_first_search_p2(wanted_joltage, all_buttons, queue, explored) // Already explored, skip this path
-            False -> {
-              let new_queue = list.fold(all_buttons, queue, fn (agregate, button) {
-                push_back(agregate, #(new_joltage, presses + 1, button))
-              })
-              breadth_first_search_p2(wanted_joltage, all_buttons, new_queue, set.insert(explored, new_joltage))
-            }
-          }
-        }
-        order.Gt -> breadth_first_search_p2(wanted_joltage, all_buttons, queue, set.insert(explored, new_joltage)) // Out of range, skip this path
-      }
-    }
-    Error(_) -> panic as {"No solution found"}
-  }
-}
-
 fn divade_all_by_two(joltage: List(Int)) -> Result(List(Int),Nil) {
   case joltage {
     [] -> Ok([])
@@ -181,12 +122,6 @@ fn divade_all_by_two(joltage: List(Int)) -> Result(List(Int),Nil) {
       _ -> Error(Nil)
     }
   }
-//  joltage |> list.fold(Ok([]), fn(aggregate, value) {
-//    case aggregate, int.remainder(value, 2) {
-//      Ok(a), Ok(0) -> Ok([value/2, ..a])
-//      _, _ -> Error(Nil)
-//    }
-//  })
 }
 
 fn compare_to_zeros(joltage: List(Int)) -> Order {
@@ -220,8 +155,8 @@ fn button_combinations(buttons: List(List(Int)), nr_joltages: Int) -> Dict(List(
 
   let button_a = glearray.from_list(buttons)
 
-  let x = possible_button_combinations |> list.fold(dict.new(), fn(aggregate, buttons) {
-    let start_joltage_array = list.range(0, nr_joltages - 1) |> list.map(fn(x) {0}) |>glearray.from_list()
+  possible_button_combinations |> list.fold(dict.new(), fn(aggregate, buttons) {
+    let start_joltage_array = list.range(0, nr_joltages - 1) |> list.map(fn(_) {0}) |>glearray.from_list()
     let delta_joltage = list.fold(buttons, start_joltage_array, fn(aggregate, button_index) {
       let button = case glearray.get(button_a, button_index) {
         Ok(b) -> b
@@ -255,9 +190,7 @@ fn minus(a: List(Int), b: Array(Int)) -> List(Int) {
 //
 // Solution heavily influenced by https://www.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/
 //
-fn solve_single_line_p2(remaining_joltage:List(Int), buttons: List(List(Int))) -> Result(Int, Nil) {
-  let odd_patterns = button_combinations(buttons, list.length(remaining_joltage)) // TODO move out
-  //echo odd_patterns
+fn solve_single_line_p2(odd_patterns: Dict(List(Int), List(#(Array(Int), Int))), remaining_joltage:List(Int), buttons: List(List(Int))) -> Result(Int, Nil) {
   case compare_to_zeros(remaining_joltage), divade_all_by_two(remaining_joltage) {
     Eq, _ -> Ok(0)
     Lt, _ -> Error(Nil)
@@ -271,8 +204,7 @@ fn solve_single_line_p2(remaining_joltage:List(Int), buttons: List(List(Int))) -
               Ok(v) -> v
               Error(_) -> panic as "No solution found"
             }
-            //echo #(remaining_joltage, delta_joltage, m, new_remaining, button_presses)
-            case aggregate, solve_single_line_p2(new_remaining, buttons) {
+            case aggregate, solve_single_line_p2(odd_patterns, new_remaining, buttons) {
               x, Error(_) -> x
               Error(_), Ok(acc) -> Ok(acc*2 + button_presses)
               Ok(a), Ok(acc) -> Ok(int.min(a, acc*2 + button_presses))
@@ -289,7 +221,7 @@ fn solve_p2(data: List(#(Array(Bool), List(List(Int)), List(Int))), aggregate: I
   case data {
     [] -> Ok(aggregate)
     [#(_, buttons, wanted_joltage), ..tail] -> {
-      let presses = case solve_single_line_p2(wanted_joltage, buttons) {
+      let presses = case solve_single_line_p2(button_combinations(buttons, list.length(wanted_joltage)), wanted_joltage, buttons) {
         Ok(presses) -> presses
         Error(_) -> panic as "No solution found"
       }
