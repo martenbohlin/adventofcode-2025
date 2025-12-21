@@ -1,6 +1,6 @@
 import gleeunit
 import gleeunit/should
-import gleam/io.{println}
+import gleam/io.{println,println_error}
 import qcheck_gleeunit_utils/test_spec
 
 import dec_10
@@ -21,22 +21,22 @@ pub fn part_1_testx() -> Nil {
   assert Ok(522) == l
 }
 
-pub fn part_2_ex_testx_()  {
-  println("")
-  println("")
-  println("Running Dec 10 Part 2 Tests")
+pub fn part_2_ex_test_()  {
   test_spec.make(fn() {
+    println_error("")
+    println_error("")
+    println_error("Running Dec 10 Part 2 Example")
     let l = dec_10.part2("./test/dec10/example.txt")
     should.equal(Ok(33), l)
   })
 }
 
-pub fn part_2_inp_testx_()  {
-  println("")
-  println("Input")
+pub fn part_2_inp_test_()  {
   test_spec.make(fn() {
+    println_error("")
+    println_error("Input")
     let l = dec_10.part2("./test/dec10/input.txt")
-    should.equal(Ok(33), l)
+    should.equal(Ok(34), l)
   })
 }
 
